@@ -5,4 +5,5 @@ namespace TaskTracker.Application.Abstractions.Repositories;
 public interface IOrganizationReadRepository
 {
     Task<OrganizationDto?> GetByIdAsync(Guid id, CancellationToken ct = default);
+    Task<IEnumerable<OrganizationDto>> GetByUserAsync(Guid userId, CancellationToken ct = default);
 }

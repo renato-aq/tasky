@@ -3,6 +3,7 @@ using TaskTracker.Api.Models;
 using TaskTracker.Application.Abstractions.CQRS;
 using TaskTracker.Application.Features.Organizations.Commands.CreateOrganization;
 using TaskTracker.Application.Features.Organizations.DTOs;
+using TaskTracker.Application.Features.Organizations.Queries.GetMyOrganizations;
 using TaskTracker.Application.Features.Organizations.Queries.GetOrganizationById;
 
 namespace TaskTracker.Api.Controllers;
@@ -11,6 +12,15 @@ namespace TaskTracker.Api.Controllers;
 public class OrganizationsController : BaseApiController
 {
     public OrganizationsController(IDispatcher dispatcher) : base(dispatcher) { }
+
+    [HttpGet("mine")]
+    [ProducesResponseType(typeof(ApiResponse<IEnumerable<OrganizationDto>>), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetMine(CancellationToken ct)
+    {
+        var result = await Dispatcher.QueryAsync<GetMyOrganizationsQuery, IEnumerable<OrganizationDto>>(
+            new GetMyOrganizationsQuery(CurrentUserId), ct);
+        return Ok(ApiResponse<IEnumerable<OrganizationDto>>.Ok(result));
+    }
 
     [HttpPost]
     [ProducesResponseType(typeof(ApiResponse<OrganizationDto>), StatusCodes.Status201Created)]
