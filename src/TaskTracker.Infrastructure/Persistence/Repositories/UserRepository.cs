@@ -35,4 +35,11 @@ public class UserRepository : IUserRepository
         if (refreshToken is not null)
             refreshToken.Revoke();
     }
+
+    public async Task SetOrganizationAsync(Guid userId, Guid organizationId, CancellationToken ct = default)
+    {
+        var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId, ct);
+        if (user is not null)
+            user.OrganizationId = organizationId;
+    }
 }
