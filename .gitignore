@@ -1,0 +1,17 @@
+## .NET
+bin/
+obj/
+*.user
+*.suo
+.vs/
+*.userprefs
+
+## Secrets
+appsettings.Local.json
+**/secrets.json
+
+## Migrations (optional — remove if you want to track them)
+# **/Migrations/
+
+## Build
+publish/
