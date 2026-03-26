@@ -46,6 +46,8 @@ public static class ServiceCollectionExtensions
         services.AddScoped<ITeamReadRepository, TeamReadRepository>();
         services.AddScoped<IProjectRepository, ProjectRepository>();
         services.AddScoped<IProjectReadRepository, ProjectReadRepository>();
+        services.AddScoped<ISprintRepository, SprintRepository>();
+        services.AddScoped<ISprintReadRepository, SprintReadRepository>();
         services.AddScoped<ITokenService, TokenService>();
         services.AddScoped<IDispatcher, Dispatcher>();
 
