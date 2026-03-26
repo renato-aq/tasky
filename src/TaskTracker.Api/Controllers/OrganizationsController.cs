@@ -3,8 +3,10 @@ using TaskTracker.Api.Models;
 using TaskTracker.Application.Abstractions.CQRS;
 using TaskTracker.Application.Features.Organizations.Commands.CreateOrganization;
 using TaskTracker.Application.Features.Organizations.DTOs;
+using OrganizationMemberDto = TaskTracker.Application.Features.Organizations.DTOs.OrganizationMemberDto;
 using TaskTracker.Application.Features.Organizations.Queries.GetMyOrganizations;
 using TaskTracker.Application.Features.Organizations.Queries.GetOrganizationById;
+using TaskTracker.Application.Features.Organizations.Queries.GetOrganizationMembers;
 
 namespace TaskTracker.Api.Controllers;
 
@@ -44,6 +46,15 @@ public class OrganizationsController : BaseApiController
             return NotFound(ApiResponse<object>.Fail("Organization not found."));
 
         return Ok(ApiResponse<OrganizationDto>.Ok(result));
+    }
+    [HttpGet("{id:guid}/members")]
+    [ProducesResponseType(typeof(ApiResponse<IEnumerable<OrganizationMemberDto>>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> GetMembers(Guid id, CancellationToken ct)
+    {
+        var result = await Dispatcher.QueryAsync<GetOrganizationMembersQuery, IEnumerable<OrganizationMemberDto>>(
+            new GetOrganizationMembersQuery(id), ct);
+        return Ok(ApiResponse<IEnumerable<OrganizationMemberDto>>.Ok(result));
     }
 }
 

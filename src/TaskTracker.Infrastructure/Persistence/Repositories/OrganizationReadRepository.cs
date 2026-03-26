@@ -27,6 +27,27 @@ public class OrganizationReadRepository : IOrganizationReadRepository
         return await connection.QuerySingleOrDefaultAsync<OrganizationDto>(sql, new { Id = id });
     }
 
+    public async Task<bool> ExistsAsync(Guid id, CancellationToken ct = default)
+    {
+        using var connection = _connectionFactory.CreateConnection();
+        return await connection.ExecuteScalarAsync<bool>(
+            "SELECT EXISTS(SELECT 1 FROM organizations WHERE id = @Id)", new { Id = id });
+    }
+
+    public async Task<IEnumerable<OrganizationMemberDto>> GetMembersAsync(Guid organizationId, CancellationToken ct = default)
+    {
+        using var connection = _connectionFactory.CreateConnection();
+
+        const string sql = """
+            SELECT id AS UserId, name
+            FROM users
+            WHERE organization_id = @OrganizationId
+            ORDER BY name
+            """;
+
+        return await connection.QueryAsync<OrganizationMemberDto>(sql, new { OrganizationId = organizationId });
+    }
+
     public async Task<IEnumerable<OrganizationDto>> GetByUserAsync(Guid userId, CancellationToken ct = default)
     {
         using var connection = _connectionFactory.CreateConnection();
