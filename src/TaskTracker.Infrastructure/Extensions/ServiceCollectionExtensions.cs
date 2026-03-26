@@ -42,6 +42,8 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<IOrganizationRepository, OrganizationRepository>();
         services.AddScoped<IOrganizationReadRepository, OrganizationReadRepository>();
+        services.AddScoped<ITeamRepository, TeamRepository>();
+        services.AddScoped<ITeamReadRepository, TeamReadRepository>();
         services.AddScoped<ITokenService, TokenService>();
         services.AddScoped<IDispatcher, Dispatcher>();
 
