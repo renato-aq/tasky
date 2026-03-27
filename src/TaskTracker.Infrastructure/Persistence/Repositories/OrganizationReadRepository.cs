@@ -39,7 +39,7 @@ public class OrganizationReadRepository : IOrganizationReadRepository
         using var connection = _connectionFactory.CreateConnection();
 
         const string sql = """
-            SELECT id AS UserId, name
+            SELECT id AS UserId, name AS UserName, email AS UserEmail, 'member' AS Role
             FROM users
             WHERE organization_id = @OrganizationId
             ORDER BY name

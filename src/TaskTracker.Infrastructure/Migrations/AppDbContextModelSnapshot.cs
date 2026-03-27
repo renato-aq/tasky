@@ -282,6 +282,48 @@ namespace TaskTracker.Infrastructure.Migrations
                     b.ToTable("users", (string)null);
                 });
 
+            modelBuilder.Entity("TaskTracker.Domain.Entities.Notification", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<string>("Payload")
+                        .IsRequired()
+                        .HasColumnType("jsonb")
+                        .HasColumnName("payload");
+
+                    b.Property<DateTime?>("ReadAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("read_at");
+
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("type");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("user_id");
+
+                    b.HasKey("Id")
+                        .HasName("pk_notifications");
+
+                    b.HasIndex("CreatedAt")
+                        .HasDatabaseName("ix_notifications_created_at");
+
+                    b.HasIndex("UserId")
+                        .HasDatabaseName("ix_notifications_user_id");
+
+                    b.ToTable("notifications", (string)null);
+                });
+
             modelBuilder.Entity("TaskTracker.Domain.Entities.Organization", b =>
                 {
                     b.Property<Guid>("Id")
@@ -482,6 +524,139 @@ namespace TaskTracker.Infrastructure.Migrations
                     b.ToTable("sprint_ceremonies", (string)null);
                 });
 
+            modelBuilder.Entity("TaskTracker.Domain.Entities.SubTaskItem", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<Guid?>("AssignedUserId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("assigned_user_id");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("status");
+
+                    b.Property<Guid>("TaskId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("task_id");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)")
+                        .HasColumnName("title");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at");
+
+                    b.HasKey("Id")
+                        .HasName("pk_sub_tasks");
+
+                    b.HasIndex("AssignedUserId")
+                        .HasDatabaseName("ix_sub_tasks_assigned_user_id");
+
+                    b.HasIndex("TaskId")
+                        .HasDatabaseName("ix_sub_tasks_task_id");
+
+                    b.ToTable("sub_tasks", (string)null);
+                });
+
+            modelBuilder.Entity("TaskTracker.Domain.Entities.TaskItem", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<Guid?>("AssignedTeamId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("assigned_team_id");
+
+                    b.Property<Guid?>("AssignedUserId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("assigned_user_id");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)")
+                        .HasColumnName("created_by");
+
+                    b.Property<Guid?>("CreatedInCeremonyId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("created_in_ceremony_id");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(5000)
+                        .HasColumnType("character varying(5000)")
+                        .HasColumnName("description");
+
+                    b.Property<DateTime?>("DueDate")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("due_date");
+
+                    b.Property<string>("Priority")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("priority");
+
+                    b.Property<Guid>("ProjectId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("project_id");
+
+                    b.Property<Guid?>("SprintId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("sprint_id");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("status");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)")
+                        .HasColumnName("title");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at");
+
+                    b.HasKey("Id")
+                        .HasName("pk_tasks");
+
+                    b.HasIndex("AssignedTeamId")
+                        .HasDatabaseName("ix_tasks_assigned_team_id");
+
+                    b.HasIndex("AssignedUserId")
+                        .HasDatabaseName("ix_tasks_assigned_user_id");
+
+                    b.HasIndex("CreatedInCeremonyId")
+                        .HasDatabaseName("ix_tasks_created_in_ceremony_id");
+
+                    b.HasIndex("ProjectId")
+                        .HasDatabaseName("ix_tasks_project_id");
+
+                    b.HasIndex("SprintId")
+                        .HasDatabaseName("ix_tasks_sprint_id");
+
+                    b.ToTable("tasks", (string)null);
+                });
+
             modelBuilder.Entity("TaskTracker.Domain.Entities.Team", b =>
                 {
                     b.Property<Guid>("Id")
@@ -646,6 +821,38 @@ namespace TaskTracker.Infrastructure.Migrations
                         .HasConstraintName("fk_sprint_ceremonies_sprints_sprint_id");
 
                     b.Navigation("Sprint");
+                });
+
+            modelBuilder.Entity("TaskTracker.Domain.Entities.SubTaskItem", b =>
+                {
+                    b.HasOne("TaskTracker.Domain.Entities.TaskItem", null)
+                        .WithMany()
+                        .HasForeignKey("TaskId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_sub_tasks_tasks_task_id");
+                });
+
+            modelBuilder.Entity("TaskTracker.Domain.Entities.TaskItem", b =>
+                {
+                    b.HasOne("TaskTracker.Domain.Entities.SprintCeremony", null)
+                        .WithMany()
+                        .HasForeignKey("CreatedInCeremonyId")
+                        .OnDelete(DeleteBehavior.SetNull)
+                        .HasConstraintName("fk_tasks_sprint_ceremonies_created_in_ceremony_id");
+
+                    b.HasOne("TaskTracker.Domain.Entities.Project", null)
+                        .WithMany()
+                        .HasForeignKey("ProjectId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_tasks_projects_project_id");
+
+                    b.HasOne("TaskTracker.Domain.Entities.Sprint", null)
+                        .WithMany()
+                        .HasForeignKey("SprintId")
+                        .OnDelete(DeleteBehavior.SetNull)
+                        .HasConstraintName("fk_tasks_sprints_sprint_id");
                 });
 
             modelBuilder.Entity("TaskTracker.Domain.Entities.Team", b =>

@@ -7,6 +7,7 @@ using TaskTracker.Application.Features.Teams.Commands.RemoveTeamMember;
 using TaskTracker.Application.Features.Teams.Commands.UpdateTeam;
 using TaskTracker.Application.Features.Teams.DTOs;
 using TaskTracker.Application.Features.Teams.Queries.GetTeamById;
+using TaskTracker.Application.Features.Teams.Queries.GetMyTeams;
 using TaskTracker.Application.Features.Teams.Queries.GetTeamsByOrganization;
 using TaskTracker.Domain.Enums;
 
@@ -16,6 +17,15 @@ namespace TaskTracker.Api.Controllers;
 public class TeamsController : BaseApiController
 {
     public TeamsController(IDispatcher dispatcher) : base(dispatcher) { }
+
+    [HttpGet("mine")]
+    [ProducesResponseType(typeof(ApiResponse<IEnumerable<TeamDto>>), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetMine(CancellationToken ct)
+    {
+        var result = await Dispatcher.QueryAsync<GetMyTeamsQuery, IEnumerable<TeamDto>>(
+            new GetMyTeamsQuery(CurrentUserId), ct);
+        return Ok(ApiResponse<IEnumerable<TeamDto>>.Ok(result));
+    }
 
     [HttpGet]
     [ProducesResponseType(typeof(ApiResponse<IEnumerable<TeamDto>>), StatusCodes.Status200OK)]

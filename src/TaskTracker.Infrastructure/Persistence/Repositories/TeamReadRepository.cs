@@ -28,6 +28,21 @@ public class TeamReadRepository : ITeamReadRepository
         return await connection.QueryAsync<TeamDto>(sql, new { OrganizationId = organizationId });
     }
 
+    public async Task<IEnumerable<TeamDto>> GetByUserAsync(Guid userId, CancellationToken ct = default)
+    {
+        using var connection = _connectionFactory.CreateConnection();
+
+        const string sql = """
+            SELECT t.id, t.organization_id AS OrganizationId, t.name, t.created_at AS CreatedAt
+            FROM teams t
+            INNER JOIN team_members tm ON tm.team_id = t.id
+            WHERE tm.user_id = @UserId
+            ORDER BY t.created_at
+            """;
+
+        return await connection.QueryAsync<TeamDto>(sql, new { UserId = userId });
+    }
+
     public async Task<TeamDetailDto?> GetByIdAsync(Guid id, CancellationToken ct = default)
     {
         using var connection = _connectionFactory.CreateConnection();

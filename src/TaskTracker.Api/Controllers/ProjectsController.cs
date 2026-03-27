@@ -7,6 +7,7 @@ using TaskTracker.Application.Features.Projects.Commands.DeleteProject;
 using TaskTracker.Application.Features.Projects.Commands.UpdateProject;
 using TaskTracker.Application.Features.Projects.DTOs;
 using TaskTracker.Application.Features.Projects.Queries.GetProjectById;
+using TaskTracker.Application.Features.Projects.Queries.GetMyProjects;
 using TaskTracker.Application.Features.Projects.Queries.GetProjectsByTeam;
 
 namespace TaskTracker.Api.Controllers;
@@ -16,6 +17,15 @@ namespace TaskTracker.Api.Controllers;
 public class ProjectsController : BaseApiController
 {
     public ProjectsController(IDispatcher dispatcher) : base(dispatcher) { }
+
+    [HttpGet("mine")]
+    [ProducesResponseType(typeof(ApiResponse<IEnumerable<ProjectDto>>), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetMine(CancellationToken ct)
+    {
+        var result = await Dispatcher.QueryAsync<GetMyProjectsQuery, IEnumerable<ProjectDto>>(
+            new GetMyProjectsQuery(CurrentUserId), ct);
+        return Ok(ApiResponse<IEnumerable<ProjectDto>>.Ok(result));
+    }
 
     [HttpGet]
     [ProducesResponseType(typeof(ApiResponse<IEnumerable<ProjectDto>>), StatusCodes.Status200OK)]

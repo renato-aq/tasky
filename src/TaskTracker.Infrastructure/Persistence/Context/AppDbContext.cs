@@ -16,6 +16,9 @@ public class AppDbContext : IdentityDbContext<ApplicationUser, IdentityRole<Guid
     public DbSet<Project> Projects => Set<Project>();
     public DbSet<Sprint> Sprints => Set<Sprint>();
     public DbSet<SprintCeremony> SprintCeremonies => Set<SprintCeremony>();
+    public DbSet<TaskItem> Tasks => Set<TaskItem>();
+    public DbSet<SubTaskItem> SubTasks => Set<SubTaskItem>();
+    public DbSet<Notification> Notifications => Set<Notification>();
 
     protected override void OnModelCreating(ModelBuilder builder)
     {

@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using TaskTracker.Api.Models;
 using TaskTracker.Application.Abstractions.CQRS;
 using TaskTracker.Application.Features.Sprints.Commands.AddCeremony;
+using TaskTracker.Application.Features.Sprints.Commands.AddTasksToSprint;
 using TaskTracker.Application.Features.Sprints.Commands.CompleteSprint;
 using TaskTracker.Application.Features.Sprints.Commands.CreateSprint;
 using TaskTracker.Application.Features.Sprints.Commands.StartSprint;
@@ -95,6 +96,18 @@ public class SprintsController : BaseApiController
         return Ok(ApiResponse<IEnumerable<SprintCeremonyDto>>.Ok(result));
     }
 
+    [HttpPost("{id:guid}/tasks")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> AddTasks(Guid id, [FromBody] AddTasksToSprintRequest request, CancellationToken ct)
+    {
+        if (request.TaskIds is null || request.TaskIds.Count == 0)
+            return BadRequest(ApiResponse<object>.Fail("At least one task ID is required."));
+
+        await Dispatcher.SendAsync(new AddTasksToSprintCommand(id, request.TaskIds, request.CeremonyId), ct);
+        return NoContent();
+    }
+
     [HttpPost("{id:guid}/ceremonies")]
     [ProducesResponseType(typeof(ApiResponse<SprintCeremonyDto>), StatusCodes.Status201Created)]
     [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
@@ -118,3 +131,4 @@ public class SprintsController : BaseApiController
 
 public record CreateSprintRequest(Guid ProjectId, string Name, string? Goal, int DurationDays = 14);
 public record AddCeremonyRequest(string Type, string? Notes, DateTime OccurredAt);
+public record AddTasksToSprintRequest(List<Guid> TaskIds, Guid? CeremonyId);
