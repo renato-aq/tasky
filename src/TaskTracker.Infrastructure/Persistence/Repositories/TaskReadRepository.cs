@@ -84,6 +84,21 @@ public class TaskReadRepository : ITaskReadRepository
         return await connection.QueryAsync<TaskDto>(sql, new { TeamId = teamId });
     }
 
+    public async Task<IEnumerable<TaskDto>> GetBySprintAsync(Guid sprintId, CancellationToken ct = default)
+    {
+        using var connection = _connectionFactory.CreateConnection();
+
+        var sql = $"""
+            SELECT {SelectColumns}
+            FROM tasks t
+            LEFT JOIN users u ON u.id = t.assigned_user_id
+            WHERE t.sprint_id = @SprintId
+            ORDER BY t.created_at DESC
+            """;
+
+        return await connection.QueryAsync<TaskDto>(sql, new { SprintId = sprintId });
+    }
+
     public async Task<IEnumerable<Guid>> GetAssignedUsersBySprintAsync(Guid sprintId, CancellationToken ct = default)
     {
         using var connection = _connectionFactory.CreateConnection();

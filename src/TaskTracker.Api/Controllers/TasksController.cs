@@ -14,6 +14,7 @@ using TaskTracker.Application.Features.Tasks.Commands.UpdateSubTaskStatus;
 using TaskTracker.Application.Features.Tasks.Queries.GetBacklogByProject;
 using TaskTracker.Application.Features.Tasks.Queries.GetSubTasksByTask;
 using TaskTracker.Application.Features.Tasks.Queries.GetTaskById;
+using TaskTracker.Application.Features.Tasks.Queries.GetTasksBySprint;
 using TaskTracker.Application.Features.Tasks.Queries.GetTasksByProject;
 using TaskTracker.Domain.Enums;
 
@@ -27,10 +28,27 @@ public class TasksController : BaseApiController
 
     [HttpGet]
     [ProducesResponseType(typeof(ApiResponse<IEnumerable<TaskDto>>), StatusCodes.Status200OK)]
-    public async Task<IActionResult> GetByProject([FromQuery] Guid projectId, CancellationToken ct)
+    [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> GetByFilter(
+        [FromQuery] Guid? projectId,
+        [FromQuery] Guid? sprintId,
+        CancellationToken ct)
     {
+        if (projectId is null && sprintId is null)
+            return BadRequest(ApiResponse<object>.Fail("Either projectId or sprintId must be provided."));
+
+        if (projectId is not null && sprintId is not null)
+            return BadRequest(ApiResponse<object>.Fail("Only one filter (projectId or sprintId) can be provided at a time."));
+
+        if (sprintId is not null)
+        {
+            var sprintResult = await Dispatcher.QueryAsync<GetTasksBySprintQuery, IEnumerable<TaskDto>>(
+                new GetTasksBySprintQuery(sprintId.Value), ct);
+            return Ok(ApiResponse<IEnumerable<TaskDto>>.Ok(sprintResult));
+        }
+
         var result = await Dispatcher.QueryAsync<GetTasksByProjectQuery, IEnumerable<TaskDto>>(
-            new GetTasksByProjectQuery(projectId), ct);
+            new GetTasksByProjectQuery(projectId!.Value), ct);
         return Ok(ApiResponse<IEnumerable<TaskDto>>.Ok(result));
     }
 
