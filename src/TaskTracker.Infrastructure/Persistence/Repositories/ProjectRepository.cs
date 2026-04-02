@@ -18,5 +18,7 @@ public class ProjectRepository : IProjectRepository
         => await _context.Projects.AddAsync(project, ct);
 
     public async Task<Project?> GetByIdAsync(Guid id, CancellationToken ct = default)
-        => await _context.Projects.FindAsync([id], ct);
+        => await _context.Projects.FirstOrDefaultAsync(
+            project => project.Id == id && project.DeletedAt == null,
+            ct);
 }

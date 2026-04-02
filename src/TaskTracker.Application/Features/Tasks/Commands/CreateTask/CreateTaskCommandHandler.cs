@@ -7,11 +7,16 @@ namespace TaskTracker.Application.Features.Tasks.Commands.CreateTask;
 
 public class CreateTaskCommandHandler : ICommandHandler<CreateTaskCommand, TaskDto>
 {
+    private readonly ISprintRepository _sprintRepository;
     private readonly ITaskRepository _taskRepository;
     private readonly IUnitOfWork _unitOfWork;
 
-    public CreateTaskCommandHandler(ITaskRepository taskRepository, IUnitOfWork unitOfWork)
+    public CreateTaskCommandHandler(
+        ISprintRepository sprintRepository,
+        ITaskRepository taskRepository,
+        IUnitOfWork unitOfWork)
     {
+        _sprintRepository = sprintRepository;
         _taskRepository = taskRepository;
         _unitOfWork = unitOfWork;
     }
@@ -30,7 +35,15 @@ public class CreateTaskCommandHandler : ICommandHandler<CreateTaskCommand, TaskD
             command.AssignedTeamId);
 
         if (command.SprintId.HasValue)
+        {
+            var sprint = await _sprintRepository.GetByIdAsync(command.SprintId.Value, ct)
+                ?? throw new InvalidOperationException("Sprint not found.");
+
+            if (sprint.ProjectId != command.ProjectId)
+                throw new InvalidOperationException("Sprint does not belong to the specified project.");
+
             task.AssignToSprint(command.SprintId.Value, command.CeremonyId);
+        }
 
         await _taskRepository.AddAsync(task, ct);
         await _unitOfWork.CommitAsync(ct);

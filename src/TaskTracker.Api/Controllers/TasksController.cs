@@ -199,7 +199,7 @@ public class TasksController : BaseApiController
 
         try
         {
-            await Dispatcher.SendAsync(new UpdateSubTaskStatusCommand(subTaskId, status), ct);
+            await Dispatcher.SendAsync(new UpdateSubTaskStatusCommand(taskId, subTaskId, status), ct);
             return NoContent();
         }
         catch (InvalidOperationException ex)
@@ -215,7 +215,7 @@ public class TasksController : BaseApiController
     {
         try
         {
-            await Dispatcher.SendAsync(new DeleteSubTaskCommand(subTaskId), ct);
+            await Dispatcher.SendAsync(new DeleteSubTaskCommand(taskId, subTaskId), ct);
             return NoContent();
         }
         catch (InvalidOperationException ex)

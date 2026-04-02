@@ -19,6 +19,9 @@ public class DeleteSubTaskCommandHandler : ICommandHandler<DeleteSubTaskCommand>
         var subTask = await _subTaskRepository.GetByIdAsync(command.SubTaskId, ct)
             ?? throw new InvalidOperationException($"SubTask {command.SubTaskId} not found.");
 
+        if (subTask.TaskId != command.TaskId)
+            throw new InvalidOperationException($"SubTask {command.SubTaskId} not found for task {command.TaskId}.");
+
         await _subTaskRepository.RemoveAsync(subTask, ct);
         await _unitOfWork.CommitAsync(ct);
     }
