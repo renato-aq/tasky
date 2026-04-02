@@ -37,8 +37,23 @@ public static class ServiceCollectionExtensions
         .AddEntityFrameworkStores<AppDbContext>()
         .AddDefaultTokenProviders();
 
+        services.AddSingleton<IDbConnectionFactory, NpgsqlConnectionFactory>();
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddScoped<IUserRepository, UserRepository>();
+        services.AddScoped<IOrganizationRepository, OrganizationRepository>();
+        services.AddScoped<IOrganizationReadRepository, OrganizationReadRepository>();
+        services.AddScoped<ITeamRepository, TeamRepository>();
+        services.AddScoped<ITeamReadRepository, TeamReadRepository>();
+        services.AddScoped<IProjectRepository, ProjectRepository>();
+        services.AddScoped<IProjectReadRepository, ProjectReadRepository>();
+        services.AddScoped<ISprintRepository, SprintRepository>();
+        services.AddScoped<ISprintReadRepository, SprintReadRepository>();
+        services.AddScoped<ITaskRepository, TaskRepository>();
+        services.AddScoped<ITaskReadRepository, TaskReadRepository>();
+        services.AddScoped<ISubTaskRepository, SubTaskRepository>();
+        services.AddScoped<INotificationRepository, NotificationRepository>();
+        services.AddScoped<INotificationReadRepository, NotificationReadRepository>();
+        services.AddScoped<INotificationService, NotificationService>();
         services.AddScoped<ITokenService, TokenService>();
         services.AddScoped<IDispatcher, Dispatcher>();
 
